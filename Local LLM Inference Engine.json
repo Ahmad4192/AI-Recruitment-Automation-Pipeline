@@ -1,0 +1,122 @@
+{
+  "name": "Local LLM Inference Engine",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "qwen2.5-coder:7b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmOllama",
+      "typeVersion": 1,
+      "position": [
+        64,
+        128
+      ],
+      "id": "f520a3db-cd38-4d3d-b5a3-84fde5f2f98f",
+      "name": "Ollama Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "i6rYPf1JzfCpkZGL",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ask-ai",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        -112
+      ],
+      "id": "bfce525a-aea3-427d-8c6b-dd29c92f21e2",
+      "name": "Incoming Request Handler",
+      "webhookId": "0a38d5c9-414f-4d4d-a443-2abe54f0f067"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.body.message }}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -16,
+        -112
+      ],
+      "id": "841b7ce4-724f-4366-b01e-50ad2b99dee2",
+      "name": "LLM Response Generator"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.text }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        336,
+        -112
+      ],
+      "id": "19bfc3e6-ed57-47df-a042-e57a9d02ec40",
+      "name": "Send AI Response"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Ollama Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "LLM Response Generator",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incoming Request Handler": {
+      "main": [
+        [
+          {
+            "node": "LLM Response Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "LLM Response Generator": {
+      "main": [
+        [
+          {
+            "node": "Send AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "62886ec0-90b0-4465-9f64-59b31be3d385",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "902398979d951761b302f0f17d85353c6a0ef4085c2980f46c2c1f4bf88fb4a2"
+  },
+  "nodeGroups": [],
+  "id": "pJFBMH2z8MUkXwZu",
+  "tags": []
+}
